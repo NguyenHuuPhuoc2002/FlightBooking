@@ -1,5 +1,13 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using FlightBooking.Entities.Entities;
+using FlightBooking.API.DbContext;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
+using System;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +34,39 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 #endregion
 
+#region Connect MySQL
+var conn = builder.Configuration.GetConnectionString("Database");
+builder.Services.AddDbContext<DataContext>(options =>
+{
+    options.UseMySql(conn, ServerVersion.AutoDetect(conn));
+});
+#endregion
+#region Identity
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<DataContext>()
+    .AddDefaultTokenProviders();
+//authentication - Token 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+
+
+}).AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWT:ValidAudience"],
+        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+    };
+});
+#endregion
 
 builder.Host.UseSerilog();
 builder.Services.AddControllers();
