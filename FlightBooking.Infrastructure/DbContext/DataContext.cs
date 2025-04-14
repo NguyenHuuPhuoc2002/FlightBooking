@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlightBooking.API.DbContext
+namespace FlightBooking.Infrastructure.DbContext
 {
     public class DataContext : IdentityDbContext<ApplicationUser>
     {

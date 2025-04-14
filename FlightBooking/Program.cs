@@ -1,5 +1,7 @@
-﻿using FlightBooking.Entities.Entities;
-using FlightBooking.API.DbContext;
+﻿using FlightBooking.Application;
+using FlightBooking.Entities.Entities;
+using FlightBooking.Infrastructure.DbContext;
+using FlightBooking.Infrastructure.Seeding;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -26,21 +28,24 @@ Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 //Cấu hình logging
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console() 
-    .WriteTo.File("Logs/log.txt",
-        rollingInterval: RollingInterval.Day, 
+    .WriteTo.Console()
+    .WriteTo.File(
+        path: Path.Combine("..", "FlightBooking.Infrastructure", "Logs", "log.txt"),
+        rollingInterval: RollingInterval.Day,
         retainedFileCountLimit: 7,
         encoding: System.Text.Encoding.UTF8)
     .CreateLogger();
+
 #endregion
 
 #region Connect MySQL
 var conn = builder.Configuration.GetConnectionString("Database");
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseMySql(conn, ServerVersion.AutoDetect(conn));
+    options.UseMySql(conn, ServerVersion.AutoDetect(conn), b => b.MigrationsAssembly("FlightBooking.API"));
 });
 #endregion
+
 #region Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<DataContext>()
@@ -100,6 +105,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 
 });
+builder.Services.AddApplicationMediaR();
 
 var app = builder.Build();
 
@@ -114,4 +120,20 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+var scope = app.Services.CreateScope();
+var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+try
+{
+    await context.Database.MigrateAsync();
+    await SeedData.Seed(context, roleManager);
+}
+catch (Exception ex)
+{
+    logger.LogError(ex, "A problem occurred during migration");
+}
+
 app.Run();
