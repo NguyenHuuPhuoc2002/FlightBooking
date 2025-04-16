@@ -12,6 +12,9 @@ namespace FlightBooking.Infrastructure.Repositories.Interfaces
     {
         public Task<IdentityResult> SignUpAsync(ApplicationUser user);
         public Task<IdentityUser> SignInAsync(string email, string password);
+        public Task<ApplicationUser> FindByEmailAsync(string email);
+        public Task<ApplicationUser> FindByIdAsync(string id);
+        public Task<IEnumerable<string>> GetRolesAsync(ApplicationUser user);
         public Task<IdentityUser> SignOutAsync();
 
     }

@@ -1,4 +1,5 @@
 ﻿using FlightBooking.Application;
+using FlightBooking.Application.DTOs;
 using FlightBooking.Entities.Entities;
 using FlightBooking.Infrastructure.DbContext;
 using FlightBooking.Infrastructure.Seeding;
@@ -66,13 +67,17 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuer = true,
         ValidateAudience = true,
+        ValidateLifetime = true,
         ValidAudience = builder.Configuration["JWT:ValidAudience"],
         ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"])),
+        ClockSkew = TimeSpan.Zero
     };
 });
 #endregion
 
+
+builder.Services.Configure<AppSetting>(builder.Configuration.GetSection("JWT"));
 builder.Host.UseSerilog();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

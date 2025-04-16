@@ -32,33 +32,38 @@ namespace FlightBooking.Infrastructure.Repositories
             {
                 _logger.LogInformation("Thực hiện kiểm tra đăng nhập !");
                 var user = await _userManager.FindByNameAsync(email);
-                var passWordValid = await _userManager.CheckPasswordAsync(user, password);
-                if(user == null || !passWordValid)
+                if (user == null)
                 {
-                    _logger.LogInformation("User không tồn tại");
-                    throw new KeyNotFoundException("User không tồn tại !");
+                    _logger.LogWarning("User không tồn tại!");
+                    throw new KeyNotFoundException("User không tồn tại!");
                 }
-
-                var result = await _signInManager.PasswordSignInAsync(email, password, false, false);
+                var passwordValid = await _userManager.CheckPasswordAsync(user, password);
+                if (!passwordValid)
+                {
+                    _logger.LogWarning("Sai mật khẩu!");
+                    throw new UnauthorizedAccessException("Sai mật khẩu!");
+                }
+                var result = await _signInManager.PasswordSignInAsync(user, password, false, false);
                 if (!result.Succeeded)
                 {
-                    _logger.LogInformation("Thông tin đăng nhập không chính xác");
-                    throw new KeyNotFoundException("Thông tin đăng nhập không chính xác !");
+                    _logger.LogWarning("Đăng nhập không thành công!");
+                    throw new UnauthorizedAccessException("Đăng nhập không thành công!");
                 }
                 return user;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _logger.LogError("Xảy ra lỗi kiểm tra đăng nhập !");
-                throw;
+                _logger.LogError(ex, "Xảy ra lỗi khi kiểm tra đăng nhập!");
+                throw; 
             }
         }
+
         public async Task<IdentityResult> SignUpAsync(ApplicationUser user)
         {
             try
             {
                 _logger.LogInformation("Tạo mới user !");
-                var result = await _userManager.CreateAsync(user);
+                var result = await _userManager.CreateAsync(user, user.PasswordHash);
 
                 if (result.Succeeded)
                 {
@@ -72,10 +77,63 @@ namespace FlightBooking.Infrastructure.Repositories
                 throw;
             }
         }
+        public async Task<ApplicationUser> FindByEmailAsync(string email)
+        {
+            try
+            {
+                _logger.LogInformation($"Không tìm thấy user {email}");
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    _logger.LogWarning($"Không tìm thấy user {email}");
+                    throw new KeyNotFoundException("Không tìm thấy user !");
+                }
+                return user;
+            }
+            catch (Exception)
+            {
+                _logger.LogError("Xảy ra lỗi khi tìm kiếm user");
+                throw;
+            }
+        }
 
+        public async Task<ApplicationUser> FindByIdAsync(string id)
+        {
+            try
+            {
+                _logger.LogInformation($"Không tìm thấy user {id}");
+                var user = await _userManager.FindByIdAsync(id);
+                if (user == null)
+                {
+                    _logger.LogWarning($"Không tìm thấy user {id}");
+                    throw new KeyNotFoundException("Không tìm thấy user !");
+                }
+                return user;
+            }
+            catch (Exception)
+            {
+                _logger.LogError("Xảy ra lỗi khi tìm kiếm user");
+                throw;
+            }
+        }
+        public async Task<IEnumerable<string>> GetRolesAsync(ApplicationUser user)
+        {
+            try
+            {
+                _logger.LogInformation("Thực hiện truy vấn lấy các role của user {email}", user.Email);
+                var useRole = await _userManager.GetRolesAsync(user);
+                return useRole;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Xảy ra lỗi khi lấy role của user {email}", user.Email);
+                throw;
+            }
+        }
         public Task<IdentityUser> SignOutAsync()
         {
             throw new NotImplementedException();
         }
+
     }
 }

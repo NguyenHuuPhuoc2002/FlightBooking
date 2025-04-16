@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlightBooking.Application.Commands
+namespace FlightBooking.Application.Commands.FlightRouteCommands
 {
-    internal class LoginUserCommand
+    public class CreateFlightRouteCommand
     {
     }
 }

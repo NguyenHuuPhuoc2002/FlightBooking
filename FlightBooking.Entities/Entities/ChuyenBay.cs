@@ -12,7 +12,7 @@ namespace FlightBooking.Entities.Entities
         public TimeOnly GioBay { get; set; }
         public TimeOnly GioDen {  get; set; }
         public DateOnly NgayBay { get; set; }
-        public Decimal GiaVe {  get; set; }
+        public float GiaVe {  get; set; }
         public TrangThaiChuyenBay TrangThai { get; set; }
         public int MaMayBay {  get; set; }
         public MayBay MayBay { get; set; }

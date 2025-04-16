@@ -1,5 +1,8 @@
-﻿using FlightBooking.Infrastructure.Repositories;
+﻿using FlightBooking.Application.Services;
+using FlightBooking.Application.Services.IServices;
+using FlightBooking.Infrastructure.Repositories;
 using FlightBooking.Infrastructure.Repositories.Interfaces;
+using FlightBooking.Infrastructure.Repositories.IRepositories;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -16,7 +19,11 @@ namespace FlightBooking.Application
             services.AddMediatR(cf => cf.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 
             services.AddTransient<IAccountRepository, AccountRepository>();
+            services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
 
+
+            //
+            services.AddTransient<IJwtTokenService, JwtTokenService>();
             return services;
 
         }

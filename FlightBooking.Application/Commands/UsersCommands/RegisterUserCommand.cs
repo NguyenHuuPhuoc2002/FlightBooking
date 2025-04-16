@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlightBooking.Application.Commands
+namespace FlightBooking.Application.Commands.UsersCommand
 {
     public class RegisterUserCommand : IRequest<IdentityResult>
     {

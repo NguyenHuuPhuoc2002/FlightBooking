@@ -10,7 +10,7 @@ namespace FlightBooking.Entities.Entities
     {
         public int MaDichVu {  get; set; }
         public string TenDichVu {  set; get; }
-        public decimal GiaDichVu { set; get; }
+        public float GiaDichVu { set; get; }
         public ICollection<ChiTietDichVu> ChiTietDichVus { get; set; }
     }
 }
