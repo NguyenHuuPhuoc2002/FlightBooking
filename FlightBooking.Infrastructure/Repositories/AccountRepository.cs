@@ -45,7 +45,6 @@ namespace FlightBooking.Infrastructure.Repositories
                     _logger.LogInformation("Thông tin đăng nhập không chính xác");
                     throw new KeyNotFoundException("Thông tin đăng nhập không chính xác !");
                 }
-
                 return user;
             }
             catch (Exception)
@@ -78,6 +77,5 @@ namespace FlightBooking.Infrastructure.Repositories
         {
             throw new NotImplementedException();
         }
-
     }
 }

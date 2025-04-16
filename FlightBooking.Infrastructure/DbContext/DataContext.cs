@@ -78,7 +78,6 @@ namespace FlightBooking.Infrastructure.DbContext
             });
             #endregion
 
-
             #region ChuyenBay
             modelBuilder.Entity<ChuyenBay>(entity =>
             {
