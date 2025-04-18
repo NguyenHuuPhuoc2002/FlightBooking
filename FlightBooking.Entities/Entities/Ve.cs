@@ -9,7 +9,6 @@ namespace FlightBooking.Entities.Entities
     public class Ve
     {
         public int MaVe {  get; set; }
-        public string SDT { get; set; }
         public DateTime NgayDatVe { get; set; }
         public TrangThaiVe TrangThai { get; set; }
         public int MaThanhVien {  get; set; }

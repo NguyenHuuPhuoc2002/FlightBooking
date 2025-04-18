@@ -17,7 +17,6 @@ namespace FlightBooking.Infrastructure.DbContext
         public DbSet<ChiTietDichVu> ChiTietDichVus { get; set; }
         public DbSet<ChuyenBay> ChuyenBays { get; set; }
         public DbSet<DichVu> DichVus{ get; set; }
-        public DbSet<GheChuyenBay> GheChuyenBays{ get; set; }
         public DbSet<GiamGia> GiamGias { get; set; }
         public DbSet<Ghe> Ghes{ get; set; }
         public DbSet<MayBay> MayBays{ get; set; }
@@ -70,11 +69,25 @@ namespace FlightBooking.Infrastructure.DbContext
             modelBuilder.Entity<TuyenBay>(entity =>
             {
                 entity.ToTable(nameof(TuyenBay));
+
                 entity.Property(e => e.KhoangCach).IsRequired();
 
                 entity.HasKey(e => e.MaTuyenBay);
 
+                entity.HasOne(tb => tb.ThanhPhoDi)
+                      .WithMany()
+                      .HasForeignKey(tb => tb.MaThanhPhoDi)
+                      .OnDelete(DeleteBehavior.Restrict);
 
+                entity.HasOne(tb => tb.ThanhPhoDen)
+                      .WithMany()
+                      .HasForeignKey(tb => tb.MaThanhPhoDen)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(tb => tb.SanBay)
+                      .WithMany(sb => sb.TuyenBays)
+                      .HasForeignKey(tb => tb.MaSanBay)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
             #endregion
 
@@ -138,9 +151,6 @@ namespace FlightBooking.Infrastructure.DbContext
             {
                 entity.ToTable(nameof(Ve));
 
-                entity.Property(e => e.SDT)
-                      .IsRequired()
-                      .HasMaxLength(11);
                 entity.Property(e => e.NgayDatVe)
                      .IsRequired();
                 entity.Property(e => e.TrangThai)
@@ -177,9 +187,6 @@ namespace FlightBooking.Infrastructure.DbContext
                 entity.ToTable(nameof(ChiTietDichVu));
 
                 entity.HasKey(sb => sb.MaChiTietDV);
-                entity.HasOne(sb => sb.Ve)
-                      .WithMany(e => e.ChiTietDichVus)
-                      .HasForeignKey(e => e.MaVe);
 
                 entity.HasOne(sb => sb.DichVu)
                       .WithMany(e => e.ChiTietDichVus)
@@ -202,25 +209,6 @@ namespace FlightBooking.Infrastructure.DbContext
             });
             #endregion
 
-            #region GheChuyenbay
-            modelBuilder.Entity<GheChuyenBay>(entity =>
-            {
-                entity.ToTable(nameof(GheChuyenBay));
-
-                entity.Property(e => e.TrangThai)
-                      .IsRequired();
-
-                entity.HasKey(sb => sb.MaGheChuyenBay);
-                entity.HasOne(sb => sb.ChuyenBay)
-                      .WithMany(e => e.GheChuyenBays)
-                      .HasForeignKey(e => e.MaChuyenBay);
-
-                entity.HasOne(sb => sb.Ghe)
-                      .WithMany(e => e.GheChuyenBays)
-                      .HasForeignKey(e => e.MaGhe);
-            });
-            #endregion
-
             #region Ghe
             modelBuilder.Entity<Ghe>(entity =>
             {
@@ -231,8 +219,6 @@ namespace FlightBooking.Infrastructure.DbContext
                       .HasMaxLength(20);
                 entity.Property(e => e.HeSoGia)
                      .IsRequired();
-
-                entity.HasKey(sb => sb.MaGhe);
             });
             #endregion
         }

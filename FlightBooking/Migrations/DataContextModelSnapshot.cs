@@ -391,12 +391,13 @@ namespace FlightBooking.API.Migrations
                     b.Property<int>("MaThanhPhoDi")
                         .HasColumnType("int");
 
-                    b.Property<int>("SanBayMaSanBay")
-                        .HasColumnType("int");
-
                     b.HasKey("MaTuyenBay");
 
-                    b.HasIndex("SanBayMaSanBay");
+                    b.HasIndex("MaSanBay");
+
+                    b.HasIndex("MaThanhPhoDen");
+
+                    b.HasIndex("MaThanhPhoDi");
 
                     b.ToTable("TuyenBay", (string)null);
                 });
@@ -656,11 +657,27 @@ namespace FlightBooking.API.Migrations
                 {
                     b.HasOne("FlightBooking.Entities.Entities.SanBay", "SanBay")
                         .WithMany("TuyenBays")
-                        .HasForeignKey("SanBayMaSanBay")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("MaSanBay")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FlightBooking.Entities.Entities.ThanhPho", "ThanhPhoDen")
+                        .WithMany()
+                        .HasForeignKey("MaThanhPhoDen")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FlightBooking.Entities.Entities.ThanhPho", "ThanhPhoDi")
+                        .WithMany()
+                        .HasForeignKey("MaThanhPhoDi")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("SanBay");
+
+                    b.Navigation("ThanhPhoDen");
+
+                    b.Navigation("ThanhPhoDi");
                 });
 
             modelBuilder.Entity("FlightBooking.Entities.Entities.Ve", b =>

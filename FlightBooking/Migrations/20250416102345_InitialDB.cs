@@ -88,7 +88,7 @@ namespace FlightBooking.API.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     TenDichVu = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    GiaDichVu = table.Column<decimal>(type: "decimal(65,30)", nullable: false)
+                    GiaDichVu = table.Column<float>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -349,18 +349,29 @@ namespace FlightBooking.API.Migrations
                     MaThanhPhoDen = table.Column<int>(type: "int", nullable: false),
                     MaThanhPhoDi = table.Column<int>(type: "int", nullable: false),
                     KhoangCach = table.Column<float>(type: "float", nullable: false),
-                    MaSanBay = table.Column<int>(type: "int", nullable: false),
-                    SanBayMaSanBay = table.Column<int>(type: "int", nullable: false)
+                    MaSanBay = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TuyenBay", x => x.MaTuyenBay);
                     table.ForeignKey(
-                        name: "FK_TuyenBay_SanBay_SanBayMaSanBay",
-                        column: x => x.SanBayMaSanBay,
+                        name: "FK_TuyenBay_SanBay_MaSanBay",
+                        column: x => x.MaSanBay,
                         principalTable: "SanBay",
                         principalColumn: "MaSanBay",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TuyenBay_ThanhPho_MaThanhPhoDen",
+                        column: x => x.MaThanhPhoDen,
+                        principalTable: "ThanhPho",
+                        principalColumn: "MaThanhPho",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TuyenBay_ThanhPho_MaThanhPhoDi",
+                        column: x => x.MaThanhPhoDi,
+                        principalTable: "ThanhPho",
+                        principalColumn: "MaThanhPho",
+                        onDelete: ReferentialAction.Restrict);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -373,7 +384,7 @@ namespace FlightBooking.API.Migrations
                     GioBay = table.Column<TimeOnly>(type: "time(6)", nullable: false),
                     GioDen = table.Column<TimeOnly>(type: "time(6)", nullable: false),
                     NgayBay = table.Column<DateOnly>(type: "date", nullable: false),
-                    GiaVe = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    GiaVe = table.Column<float>(type: "float", nullable: false),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
                     MaMayBay = table.Column<int>(type: "int", nullable: false),
                     MaTuyenBay = table.Column<int>(type: "int", nullable: false)
@@ -562,9 +573,19 @@ namespace FlightBooking.API.Migrations
                 column: "MaThanhPho");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TuyenBay_SanBayMaSanBay",
+                name: "IX_TuyenBay_MaSanBay",
                 table: "TuyenBay",
-                column: "SanBayMaSanBay");
+                column: "MaSanBay");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TuyenBay_MaThanhPhoDen",
+                table: "TuyenBay",
+                column: "MaThanhPhoDen");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TuyenBay_MaThanhPhoDi",
+                table: "TuyenBay",
+                column: "MaThanhPhoDi");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ve_MaChuyenBay",
