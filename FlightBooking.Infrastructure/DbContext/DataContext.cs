@@ -70,13 +70,28 @@ namespace FlightBooking.Infrastructure.DbContext
             modelBuilder.Entity<TuyenBay>(entity =>
             {
                 entity.ToTable(nameof(TuyenBay));
+
                 entity.Property(e => e.KhoangCach).IsRequired();
 
                 entity.HasKey(e => e.MaTuyenBay);
 
+                entity.HasOne(tb => tb.ThanhPhoDi)
+                      .WithMany()
+                      .HasForeignKey(tb => tb.MaThanhPhoDi)
+                      .OnDelete(DeleteBehavior.Restrict);
 
+                entity.HasOne(tb => tb.ThanhPhoDen)
+                      .WithMany()
+                      .HasForeignKey(tb => tb.MaThanhPhoDen)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(tb => tb.SanBay)
+                      .WithMany(sb => sb.TuyenBays)
+                      .HasForeignKey(tb => tb.MaSanBay)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
             #endregion
+
 
             #region ChuyenBay
             modelBuilder.Entity<ChuyenBay>(entity =>

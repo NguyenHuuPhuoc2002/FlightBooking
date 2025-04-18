@@ -12,6 +12,6 @@ namespace FlightBooking.Infrastructure.Repositories.IRepositories
         public Task<bool> AddAsync(TuyenBay model);
         public Task<bool> UpdateAsync(TuyenBay model);
         public Task<bool> DeleteAsync(int id);
-        public Task<IEnumerable<TuyenBay>> GetAllAsync();
+        public Task<IEnumerable<TuyenBay>> GetAllAsync(int page, int pageSize);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,9 +25,12 @@ namespace FlightBooking.Entities.Entities
     }
     public enum TrangThaiChuyenBay
     {
+        [Display(Name = "Đang khởi hành")]
         DangKhoiHanh,
+        [Display(Name = "Đã đến")]
         DaDen,
-        HuyChuyen,
+        [Display(Name = "Hủy chuyến")]
+        HuyChuyen
     }
 
 }

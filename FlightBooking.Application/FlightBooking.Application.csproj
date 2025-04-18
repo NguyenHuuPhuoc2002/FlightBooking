@@ -24,8 +24,4 @@
     <ProjectReference Include="..\FlightBooking.Infrastructure\FlightBooking.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Query\" />
-  </ItemGroup>
-
 </Project>
