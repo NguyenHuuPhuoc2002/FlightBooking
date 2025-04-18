@@ -108,15 +108,6 @@ namespace FlightBooking.API.Controllers
                 Data = token
             });
         }
-
-        [Authorize]
-        [HttpGet]
-        public IActionResult GetProduct()
-        {
-            return Ok("OK roi !");
-        }
-
-        
     }
     
 }
