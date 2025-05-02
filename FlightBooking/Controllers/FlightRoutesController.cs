@@ -11,7 +11,7 @@ namespace FlightBooking.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = AppRole.ADMIN)]
+    //[Authorize(Roles = AppRole.ADMIN)]
     public class FlightRoutesController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -11,7 +11,7 @@ namespace FlightBooking.Entities.Entities
         public int MaChiTietDV {  get; set; }
         public int MaDichVu {  get; set; }
         public DichVu DichVu{ get; set; }
-        public int MaVe {  get; set; }
+        public Guid? MaVe {  get; set; }
         public Ve Ve { get; set; }
     }
 }

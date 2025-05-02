@@ -97,22 +97,6 @@ namespace FlightBooking.API.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Ghe",
-                columns: table => new
-                {
-                    MaGhe = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    LoaiGhe = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    HeSoGia = table.Column<float>(type: "float", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Ghe", x => x.MaGhe);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "GiamGia",
                 columns: table => new
                 {
@@ -123,6 +107,22 @@ namespace FlightBooking.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GiamGia", x => x.MaGiamGia);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "LoaiGhe",
+                columns: table => new
+                {
+                    MaLoaiGhe = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    TenLoaiGhe = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    HeSoGia = table.Column<float>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LoaiGhe", x => x.MaLoaiGhe);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -317,6 +317,27 @@ namespace FlightBooking.API.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Ghe",
+                columns: table => new
+                {
+                    MaGhe = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    MaLoaiGhe = table.Column<string>(type: "varchar(50)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ghe", x => x.MaGhe);
+                    table.ForeignKey(
+                        name: "FK_Ghe_LoaiGhe_MaLoaiGhe",
+                        column: x => x.MaLoaiGhe,
+                        principalTable: "LoaiGhe",
+                        principalColumn: "MaLoaiGhe",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "SanBay",
                 columns: table => new
                 {
@@ -408,47 +429,17 @@ namespace FlightBooking.API.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "GheChuyenBay",
-                columns: table => new
-                {
-                    MaGheChuyenBay = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    TrangThai = table.Column<int>(type: "int", nullable: false),
-                    MaChuyenBay = table.Column<int>(type: "int", nullable: false),
-                    MaGhe = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GheChuyenBay", x => x.MaGheChuyenBay);
-                    table.ForeignKey(
-                        name: "FK_GheChuyenBay_ChuyenBay_MaChuyenBay",
-                        column: x => x.MaChuyenBay,
-                        principalTable: "ChuyenBay",
-                        principalColumn: "MaChuyenBay",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_GheChuyenBay_Ghe_MaGhe",
-                        column: x => x.MaGhe,
-                        principalTable: "Ghe",
-                        principalColumn: "MaGhe",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Ve",
                 columns: table => new
                 {
-                    MaVe = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    SDT = table.Column<string>(type: "varchar(11)", maxLength: 11, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    MaVe = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     NgayDatVe = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
                     MaThanhVien = table.Column<int>(type: "int", nullable: false),
                     MaChuyenBay = table.Column<int>(type: "int", nullable: false),
-                    MaGheChuyenBay = table.Column<int>(type: "int", nullable: false),
-                    MaGiamGia = table.Column<int>(type: "int", nullable: false)
+                    MaGhe = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    MaGiamGia = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -460,11 +451,16 @@ namespace FlightBooking.API.Migrations
                         principalColumn: "MaChuyenBay",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_Ve_Ghe_MaGhe",
+                        column: x => x.MaGhe,
+                        principalTable: "Ghe",
+                        principalColumn: "MaGhe",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Ve_GiamGia_MaGiamGia",
                         column: x => x.MaGiamGia,
                         principalTable: "GiamGia",
-                        principalColumn: "MaGiamGia",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "MaGiamGia");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -475,7 +471,7 @@ namespace FlightBooking.API.Migrations
                     MaChiTietDV = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     MaDichVu = table.Column<int>(type: "int", nullable: false),
-                    MaVe = table.Column<int>(type: "int", nullable: false)
+                    MaVe = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
                 },
                 constraints: table =>
                 {
@@ -488,6 +484,34 @@ namespace FlightBooking.API.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ChiTietDichVu_Ve_MaVe",
+                        column: x => x.MaVe,
+                        principalTable: "Ve",
+                        principalColumn: "MaVe",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "ChiTietLienHe",
+                columns: table => new
+                {
+                    MaChiTietLH = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    HoTen = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Email = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SDT = table.Column<string>(type: "varchar(11)", maxLength: 11, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DanhXung = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    MaVe = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChiTietLienHe", x => x.MaChiTietLH);
+                    table.ForeignKey(
+                        name: "FK_ChiTietLienHe_Ve_MaVe",
                         column: x => x.MaVe,
                         principalTable: "Ve",
                         principalColumn: "MaVe",
@@ -543,6 +567,12 @@ namespace FlightBooking.API.Migrations
                 column: "MaVe");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ChiTietLienHe_MaVe",
+                table: "ChiTietLienHe",
+                column: "MaVe",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ChuyenBay_MaMayBay",
                 table: "ChuyenBay",
                 column: "MaMayBay");
@@ -553,14 +583,9 @@ namespace FlightBooking.API.Migrations
                 column: "MaTuyenBay");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GheChuyenBay_MaChuyenBay",
-                table: "GheChuyenBay",
-                column: "MaChuyenBay");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GheChuyenBay_MaGhe",
-                table: "GheChuyenBay",
-                column: "MaGhe");
+                name: "IX_Ghe_MaLoaiGhe",
+                table: "Ghe",
+                column: "MaLoaiGhe");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_UserId",
@@ -593,6 +618,11 @@ namespace FlightBooking.API.Migrations
                 column: "MaChuyenBay");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Ve_MaGhe",
+                table: "Ve",
+                column: "MaGhe");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Ve_MaGiamGia",
                 table: "Ve",
                 column: "MaGiamGia");
@@ -620,7 +650,7 @@ namespace FlightBooking.API.Migrations
                 name: "ChiTietDichVu");
 
             migrationBuilder.DropTable(
-                name: "GheChuyenBay");
+                name: "ChiTietLienHe");
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
@@ -635,13 +665,13 @@ namespace FlightBooking.API.Migrations
                 name: "Ve");
 
             migrationBuilder.DropTable(
-                name: "Ghe");
-
-            migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "ChuyenBay");
+
+            migrationBuilder.DropTable(
+                name: "Ghe");
 
             migrationBuilder.DropTable(
                 name: "GiamGia");
@@ -651,6 +681,9 @@ namespace FlightBooking.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "TuyenBay");
+
+            migrationBuilder.DropTable(
+                name: "LoaiGhe");
 
             migrationBuilder.DropTable(
                 name: "SanBay");

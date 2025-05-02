@@ -29,6 +29,15 @@ namespace FlightBooking.Infrastructure.Repositories
             try
             {
                 _logger.LogInformation("Thực hiện tạo chuyến bay !");
+                var isDuplicate = await _context.ChuyenBays.AnyAsync(cb => (cb.MaTuyenBay == model.MaTuyenBay &&
+                                                                           cb.NgayBay == model.NgayBay &&
+                                                                           cb.GioBay == model.GioBay &&
+                                                                           cb.MaMayBay == model.MaMayBay &&
+                                                                           cb.TrangThai == TrangThaiChuyenBay.DangKhoiHanh));
+                if (isDuplicate)
+                {
+                    return false;
+                }
                 var createFlight = await _context.ChuyenBays.AddAsync(model);
                 await _context.SaveChangesAsync();
                 return true;
@@ -84,22 +93,46 @@ namespace FlightBooking.Infrastructure.Repositories
                 throw new AppException($"Lỗi server{ex.Message}", 500);
             }
         }
-
-        public async Task<IEnumerable<ChuyenBay>> SearchFlightsAsync(string dDen, string dDi, DateOnly timeKhoiHanh, int page, int pageSize)
+        public async Task<IEnumerable<ChuyenBay>> GetAllAsync(int page, int pageSize)
+        {
+            try
+            {
+                _logger.LogInformation("Lấy tất cả chuyến bay !");
+                var listFRoute = await _context.ChuyenBays.Include(e => e.MayBay)
+                                                         .Include(e => e.TuyenBay)
+                                                         .ThenInclude(e => e.ThanhPhoDi)
+                                                         .Include(e => e.TuyenBay)
+                                                         .ThenInclude(e => e.ThanhPhoDen)
+                                                         .ToListAsync();
+                var data = PaginatedList<ChuyenBay>.Create(listFRoute.AsQueryable(), page, pageSize);
+                return data;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Lấy tất cả chuyến bay thất bại !: {ex.Message}");
+                throw new AppException($"Lỗi server{ex.Message}", 500);
+            }
+        }
+        public async Task<IEnumerable<ChuyenBay>> SearchFlightsAsync(string dDen, string dDi, DateOnly? timeKhoiHanh, int page, int pageSize)
         {
             try
             {
                 _logger.LogInformation("Tìm kiếm chuyến bay !");
-                var query = _context.ChuyenBays.Include(e => e.TuyenBay).AsQueryable();
+                var query = _context.ChuyenBays.Include(e => e.TuyenBay)
+                                               .ThenInclude(e => e.ThanhPhoDi)
+                                               .Include(e => e.TuyenBay)
+                                               .ThenInclude(e => e.ThanhPhoDen)
+                                               .Include(e => e.MayBay)
+                                               .AsQueryable();
 
                 if (!string.IsNullOrEmpty(dDen))
                 {
-                    query = query.Where(e => e.TuyenBay.ThanhPhoDen.Equals(dDen));
+                    query = query.Where(e => e.TuyenBay.ThanhPhoDen.TenThanhPho.Contains(dDen));
                 }
 
                 if (!string.IsNullOrEmpty(dDi))
                 {
-                    query = query.Where(e => e.TuyenBay.ThanhPhoDi.Equals(dDi));
+                    query = query.Where(e => e.TuyenBay.ThanhPhoDi.TenThanhPho.Contains(dDi));
                 }
 
                 if (timeKhoiHanh != null)

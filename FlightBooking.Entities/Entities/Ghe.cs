@@ -8,9 +8,9 @@ namespace FlightBooking.Entities.Entities
 {
     public class Ghe
     {
-        public int MaGhe {  get; set; }
-        public string LoaiGhe {  set; get; }
-        public float HeSoGia {  get; set; }
-        public ICollection<GheChuyenBay> GheChuyenBays { get; set; }
+        public string MaGhe {  get; set; }
+        public string MaLoaiGhe{ set; get; }
+        public LoaiGhe LoaiGhe{  get; set; }
+        public ICollection<Ve> Ves { get; set; }
     }
 }

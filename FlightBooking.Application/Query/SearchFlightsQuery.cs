@@ -32,7 +32,7 @@ namespace FlightBooking.Application.Query
                 {
                     int pageIndex = request.Page ?? 1;
                     int pSize = request.PageSize ?? 5;
-                    var data = await _flight.SearchFlightsAsync(request.DiemDen, request.DiemDi, (DateOnly)request.NgayKhoiHanh, pageIndex, pSize);
+                    var data = await _flight.SearchFlightsAsync(request.DiemDen, request.DiemDi, request.NgayKhoiHanh, pageIndex, pSize);
                     var result = data.Select(e => new FlightDTO
                     {
                         MaChuyenBay = e.MaChuyenBay,
@@ -42,7 +42,7 @@ namespace FlightBooking.Application.Query
                         NgayBay = e.NgayBay,
                         TenTrangThai = EnumHelper.GetDisplayName(e.TrangThai),
                         TenMayBay = e.MayBay.TenMayBay,
-                        TuyenBay = e.TuyenBay.ThanhPhoDi.TenThanhPho + " -> " + e.TuyenBay.ThanhPhoDen,
+                        TuyenBay = e.TuyenBay.ThanhPhoDi.TenThanhPho + " -> " + e.TuyenBay.ThanhPhoDen.TenThanhPho,
                     });
                     return result;
                 }

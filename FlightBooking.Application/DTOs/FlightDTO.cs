@@ -16,8 +16,8 @@ namespace FlightBooking.Application.DTOs
         public float GiaVe{ get; set; }
         public int MaMayBay { get; set; }
         public int MaTuyenBay { get; set; }
-        public TrangThaiChuyenBay MaTrangThai{ get; set; }
-        public string TenTrangThai { get; set; }
+        public TrangThaiChuyenBay? MaTrangThai{ get; set; }
+        public string? TenTrangThai { get; set; }
         public string? TenMayBay { get; set; }
         public string? TuyenBay { get; set; }
     }

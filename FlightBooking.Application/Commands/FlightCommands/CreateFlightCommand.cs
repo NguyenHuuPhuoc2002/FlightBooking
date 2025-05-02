@@ -27,18 +27,25 @@ namespace FlightBooking.Application.Commands.FlightCommands
             {
                 try
                 {
+                    var currentDate = DateOnly.FromDateTime(DateTime.Now);
+                    var currentTime = TimeOnly.FromDateTime(DateTime.Now);
+                    if (request.FlightDTO.NgayBay < currentDate)
+                        throw new AppException("Ngày bay phải lớn hơn hoặc bằng ngày hiện tại !", 400);
+                    if (request.FlightDTO.GioBay <= currentTime && request.FlightDTO.NgayBay < currentDate)
+                        throw new AppException("Giờ bay phải lớn hơn giờ hiện tại !", 400);
                     var Flight = new ChuyenBay
                     {
                        GioBay = request.FlightDTO.GioBay,
                        GioDen = request.FlightDTO.GioDen,
                        NgayBay = request.FlightDTO.NgayBay,
                        GiaVe = request.FlightDTO.GiaVe,
-                       TrangThai = request.FlightDTO.MaTrangThai,
+                       TrangThai = TrangThaiChuyenBay.DangKhoiHanh,
                        MaMayBay = request.FlightDTO.MaMayBay,
                        MaTuyenBay = request.FlightDTO.MaTuyenBay,
                     };
-                    await _flight.CreateAsync(Flight);
-
+                    var check = await _flight.CreateAsync(Flight);
+                    if (!check)
+                        throw new AppException("Chuyến bay đã tồn tại !", 409);
                     return true;
                 }
                 catch (Exception ex)

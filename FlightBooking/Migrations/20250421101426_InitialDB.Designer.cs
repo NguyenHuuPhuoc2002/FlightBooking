@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlightBooking.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250416102345_InitialDB")]
+    [Migration("20250421101426_InitialDB")]
     partial class InitialDB
     {
         /// <inheritdoc />
@@ -124,8 +124,8 @@ namespace FlightBooking.API.Migrations
                     b.Property<int>("MaDichVu")
                         .HasColumnType("int");
 
-                    b.Property<int>("MaVe")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("MaVe")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("MaChiTietDV");
 
@@ -134,6 +134,42 @@ namespace FlightBooking.API.Migrations
                     b.HasIndex("MaVe");
 
                     b.ToTable("ChiTietDichVu", (string)null);
+                });
+
+            modelBuilder.Entity("FlightBooking.Entities.Entities.ChiTietLienHe", b =>
+                {
+                    b.Property<int>("MaChiTietLH")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("MaChiTietLH"));
+
+                    b.Property<string>("DanhXung")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("HoTen")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid?>("MaVe")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("SDT")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("varchar(11)");
+
+                    b.HasKey("MaChiTietLH");
+
+                    b.HasIndex("MaVe")
+                        .IsUnique();
+
+                    b.ToTable("ChiTietLienHe", (string)null);
                 });
 
             modelBuilder.Entity("FlightBooking.Entities.Entities.ChuyenBay", b =>
@@ -197,49 +233,18 @@ namespace FlightBooking.API.Migrations
 
             modelBuilder.Entity("FlightBooking.Entities.Entities.Ghe", b =>
                 {
-                    b.Property<int>("MaGhe")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<string>("MaGhe")
+                        .HasColumnType("varchar(255)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("MaGhe"));
-
-                    b.Property<float>("HeSoGia")
-                        .HasColumnType("float");
-
-                    b.Property<string>("LoaiGhe")
+                    b.Property<string>("MaLoaiGhe")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("MaGhe");
 
+                    b.HasIndex("MaLoaiGhe");
+
                     b.ToTable("Ghe", (string)null);
-                });
-
-            modelBuilder.Entity("FlightBooking.Entities.Entities.GheChuyenBay", b =>
-                {
-                    b.Property<int>("MaGheChuyenBay")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("MaGheChuyenBay"));
-
-                    b.Property<int>("MaChuyenBay")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MaGhe")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TrangThai")
-                        .HasColumnType("int");
-
-                    b.HasKey("MaGheChuyenBay");
-
-                    b.HasIndex("MaChuyenBay");
-
-                    b.HasIndex("MaGhe");
-
-                    b.ToTable("GheChuyenBay", (string)null);
                 });
 
             modelBuilder.Entity("FlightBooking.Entities.Entities.GiamGia", b =>
@@ -257,6 +262,25 @@ namespace FlightBooking.API.Migrations
                     b.HasKey("MaGiamGia");
 
                     b.ToTable("GiamGia", (string)null);
+                });
+
+            modelBuilder.Entity("FlightBooking.Entities.Entities.LoaiGhe", b =>
+                {
+                    b.Property<string>("MaLoaiGhe")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<float>("HeSoGia")
+                        .HasColumnType("float");
+
+                    b.Property<string>("TenLoaiGhe")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.HasKey("MaLoaiGhe");
+
+                    b.ToTable("LoaiGhe", (string)null);
                 });
 
             modelBuilder.Entity("FlightBooking.Entities.Entities.MayBay", b =>
@@ -407,19 +431,18 @@ namespace FlightBooking.API.Migrations
 
             modelBuilder.Entity("FlightBooking.Entities.Entities.Ve", b =>
                 {
-                    b.Property<int>("MaVe")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("MaVe"));
+                    b.Property<Guid>("MaVe")
+                        .HasColumnType("char(36)");
 
                     b.Property<int>("MaChuyenBay")
                         .HasColumnType("int");
 
-                    b.Property<int>("MaGheChuyenBay")
-                        .HasColumnType("int");
+                    b.Property<string>("MaGhe")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
 
-                    b.Property<int>("MaGiamGia")
+                    b.Property<int?>("MaGiamGia")
                         .HasColumnType("int");
 
                     b.Property<int>("MaThanhVien")
@@ -428,17 +451,14 @@ namespace FlightBooking.API.Migrations
                     b.Property<DateTime>("NgayDatVe")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("SDT")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("varchar(11)");
-
                     b.Property<int>("TrangThai")
                         .HasColumnType("int");
 
                     b.HasKey("MaVe");
 
                     b.HasIndex("MaChuyenBay");
+
+                    b.HasIndex("MaGhe");
 
                     b.HasIndex("MaGiamGia");
 
@@ -588,10 +608,19 @@ namespace FlightBooking.API.Migrations
                     b.HasOne("FlightBooking.Entities.Entities.Ve", "Ve")
                         .WithMany("ChiTietDichVus")
                         .HasForeignKey("MaVe")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("DichVu");
+
+                    b.Navigation("Ve");
+                });
+
+            modelBuilder.Entity("FlightBooking.Entities.Entities.ChiTietLienHe", b =>
+                {
+                    b.HasOne("FlightBooking.Entities.Entities.Ve", "Ve")
+                        .WithOne("ChiTietLienHe")
+                        .HasForeignKey("FlightBooking.Entities.Entities.ChiTietLienHe", "MaVe")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Ve");
                 });
@@ -615,23 +644,15 @@ namespace FlightBooking.API.Migrations
                     b.Navigation("TuyenBay");
                 });
 
-            modelBuilder.Entity("FlightBooking.Entities.Entities.GheChuyenBay", b =>
+            modelBuilder.Entity("FlightBooking.Entities.Entities.Ghe", b =>
                 {
-                    b.HasOne("FlightBooking.Entities.Entities.ChuyenBay", "ChuyenBay")
-                        .WithMany("GheChuyenBays")
-                        .HasForeignKey("MaChuyenBay")
+                    b.HasOne("FlightBooking.Entities.Entities.LoaiGhe", "LoaiGhe")
+                        .WithMany("Ghes")
+                        .HasForeignKey("MaLoaiGhe")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FlightBooking.Entities.Entities.Ghe", "Ghe")
-                        .WithMany("GheChuyenBays")
-                        .HasForeignKey("MaGhe")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ChuyenBay");
-
-                    b.Navigation("Ghe");
+                    b.Navigation("LoaiGhe");
                 });
 
             modelBuilder.Entity("FlightBooking.Entities.Entities.RefreshToken", b =>
@@ -691,13 +712,19 @@ namespace FlightBooking.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FlightBooking.Entities.Entities.GiamGia", "GiamGia")
+                    b.HasOne("FlightBooking.Entities.Entities.Ghe", "Ghe")
                         .WithMany("Ves")
-                        .HasForeignKey("MaGiamGia")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("MaGhe")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("FlightBooking.Entities.Entities.GiamGia", "GiamGia")
+                        .WithMany("Ves")
+                        .HasForeignKey("MaGiamGia");
+
                     b.Navigation("ChuyenBay");
+
+                    b.Navigation("Ghe");
 
                     b.Navigation("GiamGia");
                 });
@@ -755,8 +782,6 @@ namespace FlightBooking.API.Migrations
 
             modelBuilder.Entity("FlightBooking.Entities.Entities.ChuyenBay", b =>
                 {
-                    b.Navigation("GheChuyenBays");
-
                     b.Navigation("ves");
                 });
 
@@ -767,12 +792,17 @@ namespace FlightBooking.API.Migrations
 
             modelBuilder.Entity("FlightBooking.Entities.Entities.Ghe", b =>
                 {
-                    b.Navigation("GheChuyenBays");
+                    b.Navigation("Ves");
                 });
 
             modelBuilder.Entity("FlightBooking.Entities.Entities.GiamGia", b =>
                 {
                     b.Navigation("Ves");
+                });
+
+            modelBuilder.Entity("FlightBooking.Entities.Entities.LoaiGhe", b =>
+                {
+                    b.Navigation("Ghes");
                 });
 
             modelBuilder.Entity("FlightBooking.Entities.Entities.MayBay", b =>
@@ -798,6 +828,9 @@ namespace FlightBooking.API.Migrations
             modelBuilder.Entity("FlightBooking.Entities.Entities.Ve", b =>
                 {
                     b.Navigation("ChiTietDichVus");
+
+                    b.Navigation("ChiTietLienHe")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

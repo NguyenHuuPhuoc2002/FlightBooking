@@ -15,9 +15,11 @@ namespace FlightBooking.Infrastructure.DbContext
         {
         }
         public DbSet<ChiTietDichVu> ChiTietDichVus { get; set; }
+        public DbSet<ChiTietLienHe> ChiTietLienHes { get; set; }
         public DbSet<ChuyenBay> ChuyenBays { get; set; }
         public DbSet<DichVu> DichVus{ get; set; }
         public DbSet<GiamGia> GiamGias { get; set; }
+        public DbSet<LoaiGhe> LoaiGhe { get; set; }
         public DbSet<Ghe> Ghes{ get; set; }
         public DbSet<MayBay> MayBays{ get; set; }
         public DbSet<SanBay> SanBays{ get; set; }
@@ -153,8 +155,12 @@ namespace FlightBooking.Infrastructure.DbContext
 
                 entity.Property(e => e.NgayDatVe)
                      .IsRequired();
+                     
                 entity.Property(e => e.TrangThai)
                       .IsRequired();
+
+                entity.Property(e => e.MaVe)
+                      .ValueGeneratedNever();
 
                 entity.HasKey(sb => sb.MaVe);
                 entity.HasOne(sb => sb.GiamGia)
@@ -164,6 +170,25 @@ namespace FlightBooking.Infrastructure.DbContext
                 entity.HasOne(sb => sb.ChuyenBay)
                       .WithMany(e => e.ves)
                       .HasForeignKey(e => e.MaChuyenBay);
+
+                entity.HasOne(sb => sb.Ghe)
+                      .WithMany(e => e.Ves)
+                      .HasForeignKey(e => e.MaGhe)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(e => e.MaGhe)
+                      .HasMaxLength(10);
+
+                entity.HasOne(v => v.ChiTietLienHe)
+                    .WithOne(ct => ct.Ve)
+                    .HasForeignKey<ChiTietLienHe>(ct => ct.MaVe)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(v => v.ChiTietDichVus)
+                      .WithOne(dv => dv.Ve) 
+                      .HasForeignKey(dv => dv.MaVe)
+                      .OnDelete(DeleteBehavior.Cascade);
+
             });
             #endregion
 
@@ -187,10 +212,11 @@ namespace FlightBooking.Infrastructure.DbContext
                 entity.ToTable(nameof(ChiTietDichVu));
 
                 entity.HasKey(sb => sb.MaChiTietDV);
-
+               
                 entity.HasOne(sb => sb.DichVu)
                       .WithMany(e => e.ChiTietDichVus)
                       .HasForeignKey(e => e.MaDichVu);
+
             });
             #endregion
 
@@ -214,12 +240,46 @@ namespace FlightBooking.Infrastructure.DbContext
             {
                 entity.ToTable(nameof(Ghe));
 
-                entity.Property(e => e.LoaiGhe)
+                entity.HasOne(sb => sb.LoaiGhe)
+                      .WithMany(e => e.Ghes)
+                      .HasForeignKey(e => e.MaLoaiGhe);
+                entity.HasKey(sb => sb.MaGhe);
+                entity.Property(e => e.MaGhe)
+                      .ValueGeneratedNever();
+            });
+            #endregion
+
+            #region LoaiGhe
+            modelBuilder.Entity<LoaiGhe>(entity =>
+            {
+                entity.ToTable(nameof(LoaiGhe));
+                entity.HasKey(e => e.MaLoaiGhe);
+                entity.Property(e => e.TenLoaiGhe)
                       .IsRequired()
                       .HasMaxLength(20);
+                entity.Property(e => e.MaLoaiGhe)
+                      .HasMaxLength(50)
+                      .ValueGeneratedNever();
                 entity.Property(e => e.HeSoGia)
-                     .IsRequired();
+                    .IsRequired();
             });
+            #endregion
+
+            #region ChiTietLienHe
+            modelBuilder.Entity<ChiTietLienHe>(entity =>
+            {
+                entity.HasKey(e => e.MaChiTietLH);
+                entity.ToTable(nameof(ChiTietLienHe));
+                entity.Property(e => e.HoTen)
+                      .IsRequired();
+                entity.Property(e => e.Email)
+                      .IsRequired();
+                entity.Property(e => e.SDT)
+                      .IsRequired()
+                      .HasMaxLength(11);
+               
+            });
+
             #endregion
         }
     }

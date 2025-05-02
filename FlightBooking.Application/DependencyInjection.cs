@@ -22,6 +22,7 @@ namespace FlightBooking.Application
             services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddTransient<IFlightRouteRepository, FlightRouteRepository>();
             services.AddTransient<IFlightRepository, FlightRepository>();
+            services.AddTransient<IBookTicketRepository, BookTicketRepository>();
 
             //
             services.AddTransient<IJwtTokenService, JwtTokenService>();

@@ -76,12 +76,12 @@ namespace FlightBooking.Infrastructure.Seeding
                 }
 
                 // Seed Ghe
-                if (!context.Ghes.Any())
+                if (!context.LoaiGhe.Any())
                 {
-                    var ghe1 = new Ghe { LoaiGhe = "Phổ thông", HeSoGia = 1 };
-                    var ghe2 = new Ghe { LoaiGhe = "Thương gia", HeSoGia = 2 };
+                    var ghe1 = new LoaiGhe {MaLoaiGhe = "NOR", TenLoaiGhe = "Phổ thông", HeSoGia = 1 };
+                    var ghe2 = new LoaiGhe {MaLoaiGhe = "VIP", TenLoaiGhe = "Thương gia", HeSoGia = 2 };
 
-                    await context.Ghes.AddRangeAsync(ghe1, ghe2);
+                    await context.LoaiGhe.AddRangeAsync(ghe1, ghe2);
                 }
                 //Maybay
                 if (!context.MayBays.Any())
