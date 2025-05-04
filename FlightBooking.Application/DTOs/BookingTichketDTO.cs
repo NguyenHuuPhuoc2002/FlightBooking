@@ -9,7 +9,7 @@ namespace FlightBooking.Application.DTOs
     public class BookingTichketDTO
     {
         public int MaChuyenBay { get; set; }
-        public int? MaThanhVien { get; set; }
+        public string MaThanhVien { get; set; }
         public string HoTen { get; set; }
         public string Email { get; set; }
         public string SDT { get; set; }

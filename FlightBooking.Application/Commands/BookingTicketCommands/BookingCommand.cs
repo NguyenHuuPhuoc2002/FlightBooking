@@ -43,7 +43,7 @@ namespace FlightBooking.Application.Commands.BookingTicketCommands
                         MaChuyenBay = request.BookingTichketDTO.MaChuyenBay,
                         NgayDatVe = DateTime.Now,
                         TrangThai = TrangThaiVe.DaDat,
-                        MaThanhVien = (int)request.BookingTichketDTO.MaThanhVien,
+                        MaThanhVien = request.BookingTichketDTO.MaThanhVien,
                         MaGhe = request.BookingTichketDTO.MaGhe,
                         MaGiamGia = null,
                     };

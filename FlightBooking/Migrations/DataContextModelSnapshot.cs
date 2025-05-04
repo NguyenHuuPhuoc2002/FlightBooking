@@ -442,8 +442,9 @@ namespace FlightBooking.API.Migrations
                     b.Property<int?>("MaGiamGia")
                         .HasColumnType("int");
 
-                    b.Property<int>("MaThanhVien")
-                        .HasColumnType("int");
+                    b.Property<string>("MaThanhVien")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime>("NgayDatVe")
                         .HasColumnType("datetime(6)");

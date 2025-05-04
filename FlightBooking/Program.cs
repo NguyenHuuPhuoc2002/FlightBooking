@@ -1,5 +1,7 @@
 ﻿using FlightBooking.Application;
 using FlightBooking.Application.DTOs;
+using FlightBooking.Application.Services.IServices;
+using FlightBooking.Application.Services;
 using FlightBooking.Entities.Entities;
 using FlightBooking.Infrastructure.DbContext;
 using FlightBooking.Infrastructure.Seeding;
@@ -11,6 +13,8 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using System;
 using System.Text;
+using Shared.Helpers;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,7 +50,42 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseMySql(conn, ServerVersion.AutoDetect(conn), b => b.MigrationsAssembly("FlightBooking.API"));
 });
 #endregion
+#region setup cache
+var cacheDurationInHours = builder.Configuration.GetValue<int>("CacheSettings:CacheDurationInHours");
+var cacheSlidingExpirationInMinutes = builder.Configuration.GetValue<int>("CacheSettings:SlidingExpirationInMinutes");
+var cacheDuration = TimeSpan.FromHours(cacheDurationInHours);
+var cacheSlidingExpiration = TimeSpan.FromMinutes(cacheSlidingExpirationInMinutes);
+builder.Services.AddSingleton(new CacheSetting
+{
+    Duration = cacheDuration,
+    SlidingExpiration = cacheSlidingExpiration
+});
+builder.Services.AddMemoryCache(options =>
+{
+    options.SizeLimit = 10240; // Giới hạn tổng kích thước bộ nhớ cache (10 MB)
+});
+#endregion
 
+#region redis custom
+var redisConfiguration = new RedisConfiguration();
+builder.Configuration.GetSection("RedisConfiguration").Bind(redisConfiguration);
+if (string.IsNullOrEmpty(redisConfiguration.ConnectionString) || !redisConfiguration.Enabled)
+{
+    return;
+}
+builder.Services.AddSingleton(redisConfiguration);
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    return ConnectionMultiplexer.Connect(redisConfiguration.ConnectionString);
+});
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = redisConfiguration.ConnectionString;
+});
+builder.Services.AddSingleton<IResponseCacheService, ResponseCacheService>();
+builder.Services.Configure<RedisConfiguration>(builder.Configuration.GetSection("RedisConfiguration"));
+
+#endregion
 #region Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<DataContext>()
@@ -75,6 +114,9 @@ builder.Services.AddAuthentication(options =>
     };
 });
 #endregion
+
+//dependency
+builder.Services.AddSingleton<IVnPayService, VnPayService>();
 
 
 builder.Services.Configure<AppSetting>(builder.Configuration.GetSection("JWT"));

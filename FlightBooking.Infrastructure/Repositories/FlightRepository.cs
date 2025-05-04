@@ -150,5 +150,18 @@ namespace FlightBooking.Infrastructure.Repositories
                 throw new AppException($"Lỗi server{ex.Message}", 500);
             }
         }
+
+        public async Task<ChuyenBay> GetById(int id)
+        {
+            try
+            {
+                var result = await _context.ChuyenBays.FirstOrDefaultAsync(e => e.MaChuyenBay == id);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace FlightBooking.Entities.Entities
         public Guid MaVe {  get; set; }
         public DateTime NgayDatVe { get; set; }
         public TrangThaiVe TrangThai { get; set; }
-        public int MaThanhVien {  get; set; }
+        public string MaThanhVien {  get; set; }
         public int MaChuyenBay {  get; set; }
         public string MaGhe { get; set; }
         public Ghe Ghe { get; set; }
